@@ -40,3 +40,32 @@ export const getAllPokemons = async (req, res) => {
     return res.status(404).json({ msg: error });
   }
 };
+
+export const getPokemonById = async (req, res) => {
+  const { idPoke } = req.params;
+  try {
+    const pokemonObj = await Pokemon.findByPk(idPoke, {
+      attributes: [
+        "id",
+        "name",
+        "life",
+        "strength",
+        "defending",
+        "speed",
+        "height",
+        "weight",
+        "sprite",
+        "sprite2",
+      ],
+      include: {
+        model: Type,
+        attributes: ["name", "id"],
+      },
+    });
+    // console.log(pokemonObj.dataValues.types);
+    return res.status(200).json({ okey: true, pokemonObj });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ ok: false, msg: error });
+  }
+};
