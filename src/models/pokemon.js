@@ -44,6 +44,3 @@ export const Pokemon = sequelize.define("pokemon", {
     allowNull: false,
   },
 });
-
-Cliente.hasMany(Receta);
-Receta.belongsTo(Cliente);
