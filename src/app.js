@@ -1,4 +1,5 @@
 import express from "express";
+import router from "./routes/index.routes.js";
 import morgan from "morgan";
 import cors from "cors";
 import fileupload from "express-fileupload";
@@ -16,6 +17,6 @@ app.use(
   })
 );
 
-// app.use(router);
+app.use(router);
 
 export default app;
