@@ -62,8 +62,84 @@ export const getPokemonById = async (req, res) => {
         attributes: ["name", "id"],
       },
     });
-    // console.log(pokemonObj.dataValues.types);
     return res.status(200).json({ okey: true, pokemonObj });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ ok: false, msg: error });
+  }
+};
+
+export const createPokemon = async (req, res) => {
+  const {
+    id,
+    name,
+    life,
+    strength,
+    defending,
+    speed,
+    height,
+    weight,
+    sprite,
+    sprite2,
+    types,
+  } = req.body;
+  try {
+    //buscar si existe el tipo de pokemon
+    let typePokemon = [];
+    for (let i = 0; i < types.length; i++) {
+      const tipo = types[i];
+      const val = await Type.findOne({
+        where: {
+          name: tipo,
+        },
+      });
+      if (!val) {
+        return res
+          .status(400)
+          .json({ ok: false, msg: `No existe el type ${types[i]}` });
+      }
+      typePokemon.push(val.id);
+    }
+    //verificar que el nombre ya exista en la bd
+    const validateName = await Pokemon.findOne({
+      where: {
+        name: name,
+      },
+    });
+    if (validateName) {
+      return res
+        .status(400)
+        .json({ ok: false, msg: `El pokemon ${name} ya existe` });
+    }
+    const pokeAdd = await Pokemon.create({
+      id,
+      name,
+      life,
+      strength,
+      defending,
+      speed,
+      height,
+      weight,
+      sprite,
+      sprite2,
+    });
+    await pokeAdd.setTypes(typePokemon);
+    return res.status(200).json({
+      ok: true,
+      pokemon: {
+        id: pokeAdd.id,
+        name: pokeAdd.name,
+        life: pokeAdd.life,
+        strength: pokeAdd.strength,
+        defending: pokeAdd.defending,
+        speed: pokeAdd.speed,
+        height: pokeAdd.height,
+        weight: pokeAdd.weight,
+        sprite: pokeAdd.sprite,
+        sprite2: pokeAdd.sprite2,
+        types: typePokemon,
+      },
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, msg: error });
