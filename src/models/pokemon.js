@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database/database.js";
+import { Type } from "./Type.js";
 
 export const Pokemon = sequelize.define("pokemon", {
   // defino el modelo
@@ -44,3 +45,6 @@ export const Pokemon = sequelize.define("pokemon", {
     allowNull: false,
   },
 });
+
+Pokemon.hasMany(Type);
+Receta.belongsTo(Cliente);
