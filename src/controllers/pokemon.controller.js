@@ -1,5 +1,6 @@
-import { Type } from "../models/Type";
-import { Pokemon } from "../models/pokemon";
+import { Type } from "../models/Type.js";
+import { Pokemon } from "../models/Pokemon.js";
+import { charge_all_pokemons } from "../services/pokemonService.js";
 
 export const getAllPokemons = async (req, res) => {
   const { name, ultPokemon } = req.query;

@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database/database.js";
 
-export const Pokemon = sequelize.define("pokemon", {
+export const Type = sequelize.define("type", {
   // defino el modelo
   id: {
     type: DataTypes.STRING,

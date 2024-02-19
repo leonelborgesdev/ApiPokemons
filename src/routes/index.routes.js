@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getAllPokemons } from "../controllers/pokemon.comtroller";
+import PokemonRoute from "./pokemon.routes.js";
 
 const router = Router();
 
-router.use("/ping", getAllPokemons);
+router.use("/pokemon", PokemonRoute);
 
 export default router;
