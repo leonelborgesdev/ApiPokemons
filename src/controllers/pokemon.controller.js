@@ -1,4 +1,5 @@
 import { Type } from "../models/Type.js";
+import { Op } from "sequelize";
 import { Pokemon } from "../models/Pokemon.js";
 import {
   charge_all_pokemons,
