@@ -1,6 +1,8 @@
 import { Type } from "../models/Type.js";
 import { Pokemon } from "../models/Pokemon.js";
 import { charge_all_pokemons } from "../services/pokemonService.js";
+import { uploadImage } from "../utils/cloudinary.js";
+import fs from "fs-extra";
 
 export const getAllPokemons = async (req, res) => {
   const { name, ultPokemon } = req.query;
@@ -70,36 +72,25 @@ export const getPokemonById = async (req, res) => {
 };
 
 export const createPokemon = async (req, res) => {
-  const {
-    id,
-    name,
-    life,
-    strength,
-    defending,
-    speed,
-    height,
-    weight,
-    sprite,
-    sprite2,
-    types,
-  } = req.body;
+  const { id, name, life, strength, defending, speed, height, weight, types } =
+    req.body;
   try {
-    //buscar si existe el tipo de pokemon
-    let typePokemon = [];
-    for (let i = 0; i < types.length; i++) {
-      const tipo = types[i];
-      const val = await Type.findOne({
-        where: {
-          name: tipo,
-        },
-      });
-      if (!val) {
-        return res
-          .status(400)
-          .json({ ok: false, msg: `No existe el type ${types[i]}` });
-      }
-      typePokemon.push(val.id);
-    }
+    // buscar si existe el tipo de pokemon
+    let typePokemon = [1, 2];
+    // for (let i = 0; i < types.length; i++) {
+    //   const tipo = types[i];
+    //   const val = await Type.findOne({
+    //     where: {
+    //       name: tipo,
+    //     },
+    //   });
+    //   if (!val) {
+    //     return res
+    //       .status(400)
+    //       .json({ ok: false, msg: `No existe el type ${types[i]}` });
+    //   }
+    //   typePokemon.push(val.id);
+    // }
     //verificar que el nombre ya exista en la bd
     const validateName = await Pokemon.findOne({
       where: {
@@ -111,35 +102,40 @@ export const createPokemon = async (req, res) => {
         .status(400)
         .json({ ok: false, msg: `El pokemon ${name} ya existe` });
     }
-    const pokeAdd = await Pokemon.create({
-      id,
-      name,
-      life,
-      strength,
-      defending,
-      speed,
-      height,
-      weight,
-      sprite,
-      sprite2,
-    });
-    await pokeAdd.setTypes(typePokemon);
-    return res.status(200).json({
-      ok: true,
-      pokemon: {
-        id: pokeAdd.id,
-        name: pokeAdd.name,
-        life: pokeAdd.life,
-        strength: pokeAdd.strength,
-        defending: pokeAdd.defending,
-        speed: pokeAdd.speed,
-        height: pokeAdd.height,
-        weight: pokeAdd.weight,
-        sprite: pokeAdd.sprite,
-        sprite2: pokeAdd.sprite2,
-        types: typePokemon,
-      },
-    });
+    if (req.files?.image) {
+      const result = await uploadImage(req.files.image.tempFilePath);
+      const { public_id, secure_url } = result;
+      await fs.unlink(req.files.image.tempFilePath);
+      const sprite = secure_url;
+      const pokeAdd = await Pokemon.create({
+        id,
+        name,
+        life,
+        strength,
+        defending,
+        speed,
+        height,
+        weight,
+        sprite,
+      });
+      await pokeAdd.setTypes(typePokemon);
+      return res.status(200).json({
+        ok: true,
+        pokemon: {
+          id: pokeAdd.id,
+          name: pokeAdd.name,
+          life: pokeAdd.life,
+          strength: pokeAdd.strength,
+          defending: pokeAdd.defending,
+          speed: pokeAdd.speed,
+          height: pokeAdd.height,
+          weight: pokeAdd.weight,
+          sprite: pokeAdd.sprite,
+          types: typePokemon,
+        },
+      });
+    }
+    return res.status(404).json({ msg: "Error consulte a su administrador" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, msg: error });

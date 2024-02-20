@@ -42,7 +42,7 @@ export const Pokemon = sequelize.define("pokemon", {
   },
   sprite2: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
