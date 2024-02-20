@@ -14,6 +14,7 @@ export const getAllPokemons = async (req, res) => {
     }
     if (ultPokemon) {
       // const pokemonUlt = await Pokemon.findByPk(ultPokemon);
+
       const filterpokemons = await paginadoPokemons(ultPokemon, res);
       return res.status(200).json({ ok: true, pokemons: filterpokemons });
     }
@@ -76,7 +77,7 @@ export const createPokemon = async (req, res) => {
     req.body;
   try {
     // buscar si existe el tipo de pokemon
-    let typePokemon = [1, 2];
+    let typePokemon = [];
     // for (let i = 0; i < types.length; i++) {
     //   const tipo = types[i];
     //   const val = await Type.findOne({
