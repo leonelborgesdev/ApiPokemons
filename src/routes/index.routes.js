@@ -4,7 +4,7 @@ import TypeRoute from "./type.routes.js";
 
 const router = Router();
 
-router.use("/pokemon", PokemonRoute);
-router.use("/type", TypeRoute);
+router.use("/pokemons", PokemonRoute);
+router.use("/types", TypeRoute);
 
 export default router;

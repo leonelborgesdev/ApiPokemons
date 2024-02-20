@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Pokemon } from "../models/Pokemon.js";
+import { Type } from "../models/Type.js";
 
 export const charge_all_pokemons = async () => {
   // let pokemonsbdlength = await Pokemon.count();
@@ -121,4 +122,17 @@ export const cargar_pokemons = async (api) => {
             ],
     };
   });
+};
+
+export const paginadoPokemons = async (ultPokemon, res) => {
+  const AllPokemons = await Pokemon.findAll({
+    attributes: ["id", "name", "sprite", "sprite2"],
+    include: {
+      model: Type,
+      attributes: ["name", "id"],
+    },
+    offset: ultPokemon,
+    limit: 12,
+  });
+  return AllPokemons.map((pokemon) => pokemon.dataValues);
 };
