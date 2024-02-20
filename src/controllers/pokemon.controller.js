@@ -80,9 +80,12 @@ export const createPokemon = async (req, res) => {
     req.body;
   try {
     // buscar si existe el tipo de pokemon
+    console.log(types);
     let typePokemon = [];
-    for (let i = 0; i < types.length; i++) {
-      const tipo = types[i];
+    const vectype = types.split(",");
+    for (let i = 0; i < vectype.length; i++) {
+      const tipo = vectype[i];
+      console.log(tipo);
       const val = await Type.findOne({
         where: {
           name: tipo,
@@ -95,6 +98,7 @@ export const createPokemon = async (req, res) => {
       }
       typePokemon.push(val.id);
     }
+    console.log("typePokemon", typePokemon);
     //verificar que el nombre ya exista en la bd
     const validateName = await Pokemon.findOne({
       where: {
@@ -106,10 +110,10 @@ export const createPokemon = async (req, res) => {
         .status(400)
         .json({ ok: false, msg: `El pokemon ${name} ya existe` });
     }
-    if (req.files?.image) {
-      const result = await uploadImage(req.files.image.tempFilePath);
+    if (req.files?.sprite) {
+      const result = await uploadImage(req.files.sprite.tempFilePath);
       const { public_id, secure_url } = result;
-      await fs.unlink(req.files.image.tempFilePath);
+      await fs.unlink(req.files.sprite.tempFilePath);
       const sprite = secure_url;
       const pokeAdd = await Pokemon.create({
         id,
@@ -139,7 +143,9 @@ export const createPokemon = async (req, res) => {
         },
       });
     }
-    return res.status(404).json({ msg: "Error consulte a su administrador" });
+    return res
+      .status(400)
+      .json({ ok: false, msg: "consulte a su administrador" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, msg: error });
