@@ -86,18 +86,19 @@ export const createPokemon = async (req, res) => {
     const vectype = types.split(",");
     for (let i = 0; i < vectype.length; i++) {
       const tipo = vectype[i];
-      console.log(tipo);
-      const val = await Type.findOne({
-        where: {
-          name: tipo,
-        },
-      });
-      if (!val) {
-        return res
-          .status(400)
-          .json({ ok: false, msg: `No existe el type ${types[i]}` });
+      if (tipo != 0) {
+        const val = await Type.findOne({
+          where: {
+            name: tipo,
+          },
+        });
+        if (!val) {
+          return res
+            .status(400)
+            .json({ ok: false, msg: `No existe el type ${types[i]}` });
+        }
+        typePokemon.push(val.id);
       }
-      typePokemon.push(val.id);
     }
     console.log("typePokemon", typePokemon);
     //verificar que el nombre ya exista en la bd
