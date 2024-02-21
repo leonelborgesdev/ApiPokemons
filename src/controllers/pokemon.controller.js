@@ -153,6 +153,17 @@ export const createPokemon = async (req, res) => {
   }
 };
 
-export const deletePokemon = (req, res) => {
-  return res.send({ msg: "eliminando pokemon" });
+export const deletePokemon = async (req, res) => {
+  const { idPoke } = req.params;
+  try {
+    if (idPoke.length > 0) {
+      const cont = await Pokemon.destroy({ where: { id: `${idPoke}` } });
+      return res
+        .status(200)
+        .json({ ok: true, msg: `${cont} registro eliminado` });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(404).json({ ok: false, msg: error });
+  }
 };
