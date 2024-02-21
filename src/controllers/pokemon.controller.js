@@ -152,3 +152,7 @@ export const createPokemon = async (req, res) => {
     return res.status(500).json({ ok: false, msg: error });
   }
 };
+
+export const deletePokemon = (req, res) => {
+  return res.send({ msg: "eliminando pokemon" });
+};
