@@ -9,8 +9,7 @@ import { uploadImage } from "../utils/cloudinary.js";
 import fs from "fs-extra";
 
 export const getAllPokemons = async (req, res) => {
-  const { name, ultPokemon } = req.query;
-  console.log("entro");
+  const { name, ultPokemon, ord_segun, ord_desc } = req.query;
   try {
     let AllPokemons = [];
     const Lineas = await Pokemon.count();
@@ -18,8 +17,6 @@ export const getAllPokemons = async (req, res) => {
       await charge_all_pokemons();
     }
     if (ultPokemon) {
-      // const pokemonUlt = await Pokemon.findByPk(ultPokemon);
-
       const filterpokemons = await paginadoPokemons(ultPokemon, res);
       return res.status(200).json({ ok: true, pokemons: filterpokemons });
     }
@@ -33,6 +30,20 @@ export const getAllPokemons = async (req, res) => {
         where: { name: { [Op.iLike]: `%${name}%` } },
       });
       return res.status(200).json({ ok: true, pokemons: pokemonNombre });
+    }
+    if (ord_desc === "ASC" || ord_desc === "DESC") {
+      if (ord_segun === "name" || ord_segun === "streng") {
+        AllPokemons = await Pokemon.findAll({
+          attributes: ["id", "name", "sprite", "sprite2"],
+          include: {
+            model: Type,
+            attributes: ["name", "id"],
+          },
+          limit: 12,
+          order: [[ord_segun, ord_desc]],
+        });
+        return res.status(200).json({ ok: true, pokemons: AllPokemons });
+      }
     }
     AllPokemons = await Pokemon.findAll({
       attributes: ["id", "name", "sprite", "sprite2"],
