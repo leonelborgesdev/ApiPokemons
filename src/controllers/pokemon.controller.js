@@ -10,6 +10,7 @@ import fs from "fs-extra";
 
 export const getAllPokemons = async (req, res) => {
   const { name, ultPokemon } = req.query;
+  console.log("entro");
   try {
     let AllPokemons = [];
     const Lineas = await Pokemon.count();
@@ -44,7 +45,7 @@ export const getAllPokemons = async (req, res) => {
     return res.status(200).json({ ok: true, pokemons: AllPokemons });
   } catch (error) {
     console.log(error);
-    return res.status(404).json({ msg: error });
+    return res.status(400).json({ msg: error });
   }
 };
 
@@ -165,6 +166,6 @@ export const deletePokemon = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    return res.status(404).json({ ok: false, msg: error });
+    return res.status(400).json({ ok: false, msg: error });
   }
 };

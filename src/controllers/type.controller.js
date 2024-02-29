@@ -25,6 +25,6 @@ export const getAllTypes = async (req, res) => {
     }
     return res.status(200).json({ ok: true, types: AllTypes });
   } catch (error) {
-    return res.status(404).json({ msg: error });
+    return res.status(400).json({ msg: error });
   }
 };
