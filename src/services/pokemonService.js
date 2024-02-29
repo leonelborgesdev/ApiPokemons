@@ -126,7 +126,16 @@ export const cargar_pokemons = async (api) => {
 
 export const paginadoPokemons = async (ultPokemon, res) => {
   const AllPokemons = await Pokemon.findAll({
-    attributes: ["id", "name", "sprite", "sprite2"],
+    attributes: [
+      "id",
+      "name",
+      "strength",
+      "defending",
+      "life",
+      "speed",
+      "sprite",
+      "sprite2",
+    ],
     include: {
       model: Type,
       attributes: ["name", "id"],
