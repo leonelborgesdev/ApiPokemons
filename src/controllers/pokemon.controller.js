@@ -16,10 +16,6 @@ export const getAllPokemons = async (req, res) => {
     if (Lineas === 0) {
       await charge_all_pokemons();
     }
-    if (ultPokemon) {
-      const filterpokemons = await paginadoPokemons(ultPokemon, res);
-      return res.status(200).json({ ok: true, pokemons: filterpokemons });
-    }
     if (name) {
       const pokemonNombre = await Pokemon.findAll({
         attributes: ["id", "name", "sprite", "sprite2"],
@@ -31,19 +27,36 @@ export const getAllPokemons = async (req, res) => {
       });
       return res.status(200).json({ ok: true, pokemons: pokemonNombre });
     }
-    if (ord_desc === "ASC" || ord_desc === "DESC") {
-      if (ord_segun === "name" || ord_segun === "streng") {
+    if (ord_segun === "name" || ord_segun === "strength") {
+      if (ord_desc === "ASC" || ord_desc === "DESC") {
         AllPokemons = await Pokemon.findAll({
-          attributes: ["id", "name", "sprite", "sprite2"],
+          attributes: ["id", "name", "strength", "sprite", "sprite2"],
           include: {
             model: Type,
             attributes: ["name", "id"],
           },
+          offset: ultPokemon,
           limit: 12,
           order: [[ord_segun, ord_desc]],
         });
         return res.status(200).json({ ok: true, pokemons: AllPokemons });
+      } else {
+        AllPokemons = await Pokemon.findAll({
+          attributes: ["id", "name", "strength", "sprite", "sprite2"],
+          include: {
+            model: Type,
+            attributes: ["name", "id"],
+          },
+          offset: ultPokemon,
+          limit: 12,
+          order: [[ord_segun, "ASC"]],
+        });
+        return res.status(200).json({ ok: true, pokemons: AllPokemons });
       }
+    }
+    if (ultPokemon) {
+      const filterpokemons = await paginadoPokemons(ultPokemon, res);
+      return res.status(200).json({ ok: true, pokemons: filterpokemons });
     }
     AllPokemons = await Pokemon.findAll({
       attributes: ["id", "name", "sprite", "sprite2"],
