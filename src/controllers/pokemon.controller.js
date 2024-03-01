@@ -207,7 +207,20 @@ export const updatePokemon = async (req, res) => {
   const { idPoke } = req.params;
   const { id, ...pokemon } = req.body;
   try {
-    const poke = await Pokemon.update(pokemon, {
+    if (pokemon.name) {
+      const verify_name = await Pokemon.findOne({
+        where: {
+          name: pokemon.name,
+        },
+      });
+      if (verify_name) {
+        return res.status(400).json({
+          ok: false,
+          msg: `El pokemon ${pokemon.name} ya existe`,
+        });
+      }
+    }
+    await Pokemon.update(pokemon, {
       //modificando
       include: Type,
       where: {
