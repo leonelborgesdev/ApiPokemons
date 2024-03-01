@@ -203,6 +203,31 @@ export const createPokemon = async (req, res) => {
     return res.status(500).json({ ok: false, msg: error });
   }
 };
+export const updatePokemon = async (req, res) => {
+  const { idPoke } = req.params;
+  const { id, ...pokemon } = req.body;
+  try {
+    const poke = await Pokemon.update(pokemon, {
+      //modificando
+      include: Type,
+      where: {
+        id: idPoke,
+      },
+    });
+    const pokeUpdate = await Pokemon.findOne({
+      include: Type,
+      where: {
+        id: idPoke,
+      },
+    });
+    if (pokemon.types) {
+      await pokeUpdate.setTypes(pokemon.types);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ ok: false, msg: error });
+  }
+};
 
 export const deletePokemon = async (req, res) => {
   const { idPoke } = req.params;
