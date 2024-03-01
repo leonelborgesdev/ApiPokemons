@@ -13,7 +13,7 @@ router.get("/", getAllPokemons);
 router.get("/:idPoke", getPokemonById);
 router.post("/", createPokemon);
 
-router.update("/:idPoke", updatePokemon);
+router.put("/:idPoke", updatePokemon);
 router.delete("/:idPoke", deletePokemon);
 
 export default router;
