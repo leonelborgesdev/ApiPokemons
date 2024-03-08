@@ -236,6 +236,10 @@ export const updatePokemon = async (req, res) => {
     if (pokemon.types) {
       await pokeUpdate.setTypes(pokemon.types);
     }
+    return res.status(200).json({
+      ok: true,
+      msg: `El pokemon ${pokemon.name}, ha sido modificado`,
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ ok: false, msg: error });
