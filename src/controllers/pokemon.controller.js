@@ -207,39 +207,52 @@ export const updatePokemon = async (req, res) => {
   const { idPoke } = req.params;
   const { id, ...pokemon } = req.body;
   try {
-    if (pokemon.name) {
-      const verify_name = await Pokemon.findOne({
+    console.log("pokemon", pokemon);
+    if (pokemon) {
+      if (pokemon.name) {
+        const verify_name = await Pokemon.findOne({
+          where: {
+            name: pokemon.name,
+          },
+        });
+        if (verify_name) {
+          return res.status(400).json({
+            ok: false,
+            msg: `El pokemon ${pokemon.name} ya existe`,
+          });
+        }
+      }
+      if (req.files?.sprite) {
+        const result = await uploadImage(req.files.sprite.tempFilePath);
+        const { public_id, secure_url } = result;
+        await fs.unlink(req.files.sprite.tempFilePath);
+        pokemon["sprite"] = secure_url;
+      }
+      await Pokemon.update(pokemon, {
+        //modificando
+        include: Type,
         where: {
-          name: pokemon.name,
+          id: idPoke,
         },
       });
-      if (verify_name) {
-        return res.status(400).json({
-          ok: false,
-          msg: `El pokemon ${pokemon.name} ya existe`,
-        });
+      const pokeUpdate = await Pokemon.findOne({
+        include: Type,
+        where: {
+          id: idPoke,
+        },
+      });
+      if (pokemon.types) {
+        await pokeUpdate.setTypes(pokemon.types);
       }
+      return res.status(200).json({
+        ok: true,
+        msg: `El pokemon ${pokemon.name}, ha sido modificado`,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ ok: false, msg: "Error consulte con el administrador" });
     }
-    await Pokemon.update(pokemon, {
-      //modificando
-      include: Type,
-      where: {
-        id: idPoke,
-      },
-    });
-    const pokeUpdate = await Pokemon.findOne({
-      include: Type,
-      where: {
-        id: idPoke,
-      },
-    });
-    if (pokemon.types) {
-      await pokeUpdate.setTypes(pokemon.types);
-    }
-    return res.status(200).json({
-      ok: true,
-      msg: `El pokemon ${pokemon.name}, ha sido modificado`,
-    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ ok: false, msg: error });
