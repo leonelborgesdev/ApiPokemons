@@ -28,6 +28,9 @@ export const getAllPokemons = async (req, res) => {
     }
     console.log(name, ord_desc, ord_segun);
     if (name && ord_segun && ord_desc) {
+      const countPok = await Pokemon.count({
+        where: { name: { [Op.iLike]: `%${name}%` } },
+      });
       if (ord_segun === "name" || ord_segun === "strength") {
         if (ord_desc === "ASC" || ord_desc === "DESC") {
           AllPokemons = await Pokemon.findAll({
@@ -43,7 +46,7 @@ export const getAllPokemons = async (req, res) => {
           });
           return res
             .status(200)
-            .json({ ok: true, pokemons: AllPokemons, countPok: Lineas });
+            .json({ ok: true, pokemons: AllPokemons, countPok });
         } else {
           AllPokemons = await Pokemon.findAll({
             attributes,
@@ -58,11 +61,10 @@ export const getAllPokemons = async (req, res) => {
           });
           return res
             .status(200)
-            .json({ ok: true, pokemons: AllPokemons, countPok: Lineas });
+            .json({ ok: true, pokemons: AllPokemons, countPok });
         }
       }
     }
-
     if (name) {
       const countPok = await Pokemon.count({
         where: { name: { [Op.iLike]: `%${name}%` } },
@@ -77,6 +79,7 @@ export const getAllPokemons = async (req, res) => {
         where: { name: { [Op.iLike]: `%${name}%` } },
         limit: 12,
       });
+      console.log("countPoke", countPok);
       return res
         .status(200)
         .json({ ok: true, pokemons: pokemonNombre, countPok });
@@ -111,6 +114,22 @@ export const getAllPokemons = async (req, res) => {
           .status(200)
           .json({ ok: true, pokemons: AllPokemons, countPok: Lineas });
       }
+    }
+
+    if (ultPokemon) {
+      const countPok = await Pokemon.count();
+      const pokemonNombre = await Pokemon.findAll({
+        attributes,
+        include: {
+          model: Type,
+          attributes: ["name", "id"],
+        },
+        offset: ultPokemon,
+        limit: 12,
+      });
+      return res
+        .status(200)
+        .json({ ok: true, pokemons: pokemonNombre, countPok });
     }
     AllPokemons = await Pokemon.findAll({
       attributes,
