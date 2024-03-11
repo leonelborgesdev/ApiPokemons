@@ -27,7 +27,7 @@ export const getAllPokemons = async (req, res) => {
       await charge_all_pokemons();
     }
     console.log(name, ord_desc, ord_segun);
-    if (name && ord_segun != undefined && ord_desc != undefined) {
+    if (name && ord_segun && ord_desc) {
       if (ord_segun === "name" || ord_segun === "strength") {
         if (ord_desc === "ASC" || ord_desc === "DESC") {
           AllPokemons = await Pokemon.findAll({
@@ -81,11 +81,36 @@ export const getAllPokemons = async (req, res) => {
         .status(200)
         .json({ ok: true, pokemons: pokemonNombre, countPok });
     }
-    if (ultPokemon) {
-      const filterpokemons = await paginadoPokemons(ultPokemon, res);
-      return res
-        .status(200)
-        .json({ ok: true, pokemons: filterpokemons, countPok: Lineas });
+    if (ord_segun === "name" || ord_segun === "strength") {
+      if (ord_desc === "ASC" || ord_desc === "DESC") {
+        AllPokemons = await Pokemon.findAll({
+          attributes,
+          include: {
+            model: Type,
+            attributes: ["name", "id"],
+          },
+          offset: ultPokemon,
+          limit: 12,
+          order: [[ord_segun, ord_desc]],
+        });
+        return res
+          .status(200)
+          .json({ ok: true, pokemons: AllPokemons, countPok: Lineas });
+      } else {
+        AllPokemons = await Pokemon.findAll({
+          attributes,
+          include: {
+            model: Type,
+            attributes: ["name", "id"],
+          },
+          offset: ultPokemon,
+          limit: 12,
+          order: [[ord_segun, "ASC"]],
+        });
+        return res
+          .status(200)
+          .json({ ok: true, pokemons: AllPokemons, countPok: Lineas });
+      }
     }
     AllPokemons = await Pokemon.findAll({
       attributes,
