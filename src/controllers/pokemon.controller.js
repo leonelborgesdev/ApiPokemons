@@ -1,15 +1,12 @@
 import { Type } from "../models/Type.js";
 import { Op } from "sequelize";
 import { Pokemon } from "../models/Pokemon.js";
-import {
-  charge_all_pokemons,
-  paginadoPokemons,
-} from "../services/pokemonService.js";
+import { charge_all_pokemons } from "../services/pokemonService.js";
 import { uploadImage } from "../utils/cloudinary.js";
 import fs from "fs-extra";
 
 export const getAllPokemons = async (req, res) => {
-  const { name, ultPokemon, ord_segun, ord_desc } = req.query;
+  const { name, ultPokemon, ord_segun, ord_desc, typename } = req.query;
   const attributes = [
     "id",
     "name",
@@ -27,6 +24,44 @@ export const getAllPokemons = async (req, res) => {
       await charge_all_pokemons();
     }
     console.log(name, ord_desc, ord_segun);
+    if (typename) {
+      console.log("entroooooooooo");
+      const PokemonsByType = await Type.findAll({
+        attributes: ["id", "name"],
+        include: [
+          {
+            model: Pokemon,
+            attributes,
+            include: [
+              {
+                model: Type,
+                attributes: ["id", "name"],
+              },
+            ],
+          },
+        ],
+        where: { name: typename },
+      });
+      return res.status(200).json({
+        ok: true,
+        countPoke: PokemonsByType[0].pokemons.length,
+        PokemonsByType,
+      });
+      // const PokemonsByType = await Pokemon.findAll({
+      //   attributes,
+      //   include: [
+      //     {
+      //       model: Type,
+      //       as: "typitos",
+      //       required: true,
+      //       // where: { name: typename },
+      //     },
+      //   ],
+      //   where: { "$typitos.name$": typename },
+      //   offset: ultPokemon,
+      //   limit: 12,
+      // });
+    }
     if (name && ord_segun && ord_desc) {
       const countPok = await Pokemon.count({
         where: { name: { [Op.iLike]: `%${name}%` } },
@@ -69,6 +104,7 @@ export const getAllPokemons = async (req, res) => {
       const countPok = await Pokemon.count({
         where: { name: { [Op.iLike]: `%${name}%` } },
       });
+      // const AllPokes= await Pokemon.
       const pokemonNombre = await Pokemon.findAll({
         attributes,
         include: {
