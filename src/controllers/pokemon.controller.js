@@ -104,7 +104,7 @@ export const getAllPokemons = async (req, res) => {
       // });
       return res.status(200).json({
         ok: true,
-        countPoke: countPokemonsByType.length,
+        countPok: countPokemonsByType.length,
         PokemonsByType,
       });
     }
