@@ -105,7 +105,7 @@ export const getAllPokemons = async (req, res) => {
       return res.status(200).json({
         ok: true,
         countPok: countPokemonsByType.length,
-        PokemonsByType,
+        pokemons: PokemonsByType,
       });
     }
     if (name && ord_segun && ord_desc) {
