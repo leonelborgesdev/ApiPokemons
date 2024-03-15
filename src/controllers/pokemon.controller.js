@@ -26,41 +26,74 @@ export const getAllPokemons = async (req, res) => {
     console.log(name, ord_desc, ord_segun);
     if (typename) {
       console.log("entroooooooooo");
-      const PokemonsByType = await Type.findAll({
-        attributes: ["id", "name"],
+
+      const PokemonsByType = await Pokemon.findAll({
+        attributes,
         include: [
           {
-            model: Pokemon,
-            attributes,
-            include: [
-              {
-                model: Type,
-                attributes: ["id", "name"],
-              },
-            ],
+            model: Type,
+            attributes: ["id", "name"],
+            where: {
+              name: typename,
+            },
           },
         ],
-        where: { name: typename },
+        // where: { "$types.name$": typename },
+        offset: ultPokemon,
+        limit: 12,
       });
-      return res.status(200).json({
-        ok: true,
-        countPoke: PokemonsByType[0].pokemons.length,
-        PokemonsByType,
-      });
+      // const countPoke = await Type.findAll({
+      //   attributes: ["id", "name"],
+      //   include: [
+      //     {
+      //       model: Pokemon,
+      //       attributes,
+      //     },
+      //   ],
+      //   where: { name: typename },
+      // });
+      // const PokemonsByType = await Type.findAll({
+      //   attributes: ["id", "name"],
+      //   include: [
+      //     {
+      //       model: Pokemon,
+      //       attributes,
+      //       include: [
+      //         {
+      //           model: Type,
+      //           attributes: ["id", "name"],
+      //         },
+      //       ],
+      //       offset: 1,
+      //       limit: 12,
+      //     },
+      //   ],
+      //   where: { name: typename },
+      // });
+      // return res.status(200).json({
+      //   ok: true,
+      //   countPoke: countPoke[0].pokemons.length,
+      //   PokemonsByType,
+      // });
       // const PokemonsByType = await Pokemon.findAll({
       //   attributes,
       //   include: [
       //     {
+      //       attributes: ["types.id", "types.name"],
       //       model: Type,
-      //       as: "typitos",
+      //       as: "types",
       //       required: true,
       //       // where: { name: typename },
       //     },
       //   ],
-      //   where: { "$typitos.name$": typename },
+      //   where: { "$types.name$": typename },
       //   offset: ultPokemon,
       //   limit: 12,
       // });
+      return res.status(200).json({
+        ok: true,
+        PokemonsByType,
+      });
     }
     if (name && ord_segun && ord_desc) {
       const countPok = await Pokemon.count({
