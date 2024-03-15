@@ -27,6 +27,18 @@ export const getAllPokemons = async (req, res) => {
     if (typename) {
       console.log("entroooooooooo");
 
+      const countPokemonsByType = await Pokemon.findAll({
+        attributes,
+        include: [
+          {
+            attributes: ["id", "name"],
+            model: Type,
+            where: {
+              name: typename,
+            },
+          },
+        ],
+      });
       const PokemonsByType = await Pokemon.findAll({
         attributes,
         include: [
@@ -92,6 +104,7 @@ export const getAllPokemons = async (req, res) => {
       // });
       return res.status(200).json({
         ok: true,
+        countPoke: countPokemonsByType.length,
         PokemonsByType,
       });
     }
