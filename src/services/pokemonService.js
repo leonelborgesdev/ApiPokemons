@@ -145,3 +145,16 @@ export const paginadoPokemons = async (ultPokemon, res) => {
   });
   return AllPokemons.map((pokemon) => pokemon.dataValues);
 };
+
+export const pokemonsFilterByTypes = (pokemonsByType, pokemons) => {
+  let pokemonsFilter = [];
+  pokemonsByType.map((pokemonType) => {
+    for (let i = 0; i < pokemons.length; i++) {
+      const element = pokemons[i];
+      if (pokemonType.id === element.id) {
+        pokemonsFilter.push(pokemonType);
+      }
+    }
+  });
+  return pokemonsFilter;
+};

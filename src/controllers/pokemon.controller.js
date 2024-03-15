@@ -1,7 +1,10 @@
 import { Type } from "../models/Type.js";
 import { Op } from "sequelize";
 import { Pokemon } from "../models/Pokemon.js";
-import { charge_all_pokemons } from "../services/pokemonService.js";
+import {
+  charge_all_pokemons,
+  pokemonsFilterByTypes,
+} from "../services/pokemonService.js";
 import { uploadImage } from "../utils/cloudinary.js";
 import fs from "fs-extra";
 
@@ -58,7 +61,10 @@ export const getAllPokemons = async (req, res) => {
       return res.status(200).json({
         ok: true,
         countPok: countPokemonsByType[0].pokemons.length,
-        pokemons: PokemonsByType,
+        pokemons: pokemonsFilterByTypes(
+          countPokemonsByType[0].pokemons,
+          PokemonsByType
+        ),
       });
     }
     if (name && ord_segun && ord_desc) {
