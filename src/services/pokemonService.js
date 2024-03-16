@@ -148,11 +148,11 @@ export const paginadoPokemons = async (ultPokemon, res) => {
 
 export const pokemonsFilterByTypes = (pokemonsByType, pokemons) => {
   let pokemonsFilter = [];
-  pokemonsByType.map((pokemonType) => {
-    for (let i = 0; i < pokemons.length; i++) {
-      const element = pokemons[i];
-      if (pokemonType.id === element.id) {
-        pokemonsFilter.push(pokemonType);
+  pokemons.map((pokemonfilter) => {
+    for (let i = 0; i < pokemonsByType.length; i++) {
+      const element = pokemonsByType[i];
+      if (pokemonfilter.id === element.id) {
+        pokemonsFilter.push(element);
       }
     }
   });
