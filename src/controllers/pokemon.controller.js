@@ -26,7 +26,76 @@ export const getAllPokemons = async (req, res) => {
     if (Lineas === 0) {
       await charge_all_pokemons();
     }
-    console.log(name, ord_desc, ord_segun);
+    //--------------------FilterPokemonsByType--------------
+    if (typename && ord_segun && ord_desc) {
+      const countPokemonsByType = await Type.findAll({
+        attributes: ["id", "name"],
+        include: [
+          {
+            model: Pokemon,
+            attributes,
+            include: [
+              {
+                model: Type,
+                attributes: ["id", "name"],
+              },
+            ],
+          },
+        ],
+        where: { name: typename },
+      });
+      if (ord_segun === "name" || ord_segun === "strength") {
+        if (ord_desc === "ASC" || ord_desc === "DESC") {
+          const PokemonsByType = await Pokemon.findAll({
+            attributes,
+            include: [
+              {
+                model: Type,
+                attributes: ["id", "name"],
+                where: {
+                  name: typename,
+                },
+              },
+            ],
+            offset: ultPokemon,
+            limit: 12,
+            order: [[ord_segun, ord_desc]],
+          });
+          return res.status(200).json({
+            ok: true,
+            countPok: countPokemonsByType[0].pokemons.length,
+            pokemons: pokemonsFilterByTypes(
+              countPokemonsByType[0].pokemons,
+              PokemonsByType
+            ),
+          });
+        } else {
+          const PokemonsByType = await Pokemon.findAll({
+            attributes,
+            include: [
+              {
+                model: Type,
+                attributes: ["id", "name"],
+                where: {
+                  name: typename,
+                },
+              },
+            ],
+            offset: ultPokemon,
+            limit: 12,
+            order: [[ord_segun, "ASC"]],
+          });
+          return res.status(200).json({
+            ok: true,
+            countPok: countPokemonsByType[0].pokemons.length,
+            pokemons: pokemonsFilterByTypes(
+              countPokemonsByType[0].pokemons,
+              PokemonsByType
+            ),
+          });
+        }
+      }
+    }
     if (typename) {
       const countPokemonsByType = await Type.findAll({
         attributes: ["id", "name"],
@@ -67,6 +136,7 @@ export const getAllPokemons = async (req, res) => {
         ),
       });
     }
+    //----------------------FilterPokemonsByName------------------------
     if (name && ord_segun && ord_desc) {
       const countPok = await Pokemon.count({
         where: { name: { [Op.iLike]: `%${name}%` } },
@@ -120,7 +190,6 @@ export const getAllPokemons = async (req, res) => {
         where: { name: { [Op.iLike]: `%${name}%` } },
         limit: 12,
       });
-      console.log("countPoke", countPok);
       return res
         .status(200)
         .json({ ok: true, pokemons: pokemonNombre, countPok });
